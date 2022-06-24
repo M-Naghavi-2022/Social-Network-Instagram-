@@ -16,7 +16,7 @@ class PostView(viewsets.ViewSet):
 
     def list(self, request):
         qs = request.user.posts.all().order_by('-create_time')
-        serializer = PostSerializer(qs, many=True)
+        serializer = PostSerializer(qs, many=True, context={"user": request.user})
         return Response(serializer.data)
 
     def create(self, request):
@@ -48,7 +48,7 @@ class PostView(viewsets.ViewSet):
     @action(methods=["GET"], detail=False, url_name='followings_posts')
     def followings_posts(self, request):
         qs = PostInstagram.objects.filter(user__followers__follower = request.user).order_by('-create_time')
-        serializer = PostSerializer(qs, many=True)
+        serializer = PostSerializer(qs, many=True, context={"user": request.user})
         return Response(serializer.data)
 
 
@@ -97,7 +97,7 @@ class PostCommentView(viewsets.ViewSet):
         (post.user.followers.filter(follower=request.user).exists()) or\
         (post.user.private_status==False):
             qs = post.post_comments.order_by('-create_time')
-            serializer = CommentSerializer(qs, many=True)
+            serializer = CommentSerializer(qs, many=True, context={"user": request.user})
             return Response(serializer.data)
         else:
             return Response(status=403)

@@ -65,7 +65,7 @@ class FollowerCRUD(viewsets.ViewSet):
         else:
             return Response(serializer.errors)
 
-    @action(methods=["POST"], detail=True, url_path="accept_follow_request")
+    @action(methods=["GET"], detail=True, url_path="accept_follow_request")
     def accept_follow_request(self, request, pk=None):
         follow_req_obj = get_object_or_404(FollowerTable, pk=pk)
         if follow_req_obj.following != request.user:
@@ -74,7 +74,7 @@ class FollowerCRUD(viewsets.ViewSet):
         follow_req_obj.save()
         return Response(status=200)
 
-    @action(methods=["POST"], detail=True, url_path="remove_follower")  
+    @action(methods=["GET"], detail=True, url_path="remove_follower")  
     def remove_follower(self, request, pk=None):
         follow_req_obj = get_object_or_404(FollowerTable, pk=pk)
         if follow_req_obj.following != request.user:
@@ -82,7 +82,7 @@ class FollowerCRUD(viewsets.ViewSet):
         follow_req_obj.delete()
         return Response(status=204)
 
-    @action(methods=["POST"], detail=True, url_path="unfollow")  
+    @action(methods=["GET"], detail=True, url_path="unfollow")  
     def unfollow(self, request, pk=None):
         follow_req_obj = get_object_or_404(FollowerTable, pk=pk)
         if follow_req_obj.follower != request.user:

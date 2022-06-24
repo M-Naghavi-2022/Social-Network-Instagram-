@@ -12,6 +12,8 @@ class CommentLikeSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
     likes_count = serializers.SerializerMethodField()
+    liked_by_user = serializers.SerializerMethodField()
+    
     class Meta:
         model = PostComment
         exclude = ["post"]
@@ -27,6 +29,12 @@ class CommentSerializer(serializers.ModelSerializer):
     def get_likes_count(self, obj):
         return obj.comment_likes.count()
 
+    def get_liked_by_user(self, obj):
+        if obj.comment_likes.filter(user=self.context["user"]).exists():
+            return True
+        return False
+
+
 class PostLikeSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
     class Meta:
@@ -38,6 +46,7 @@ class PostSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
     likes_count = serializers.SerializerMethodField()
     comments_count = serializers.SerializerMethodField()
+    liked_by_user = serializers.SerializerMethodField()
     class Meta:
         model = PostInstagram
         fields = "__all__"
@@ -54,6 +63,11 @@ class PostSerializer(serializers.ModelSerializer):
 
     def get_comments_count(self, obj):
         return obj.post_comments.count()
+
+    def get_liked_by_user(self, obj):
+        if obj.post_likes.filter(user=self.context["user"]).exists():
+            return True
+        return False
 
 
 class PostEditSerializer(serializers.ModelSerializer):
