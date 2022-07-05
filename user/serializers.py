@@ -1,14 +1,23 @@
+from hashlib import sha256
+from django.contrib.auth.hashers import make_password
+
 from rest_framework import serializers
 
 from . models import User, FollowerTable
 
-# class RegisterSerializer(serializers.ModelSerializer):
+class RegisterSerializer(serializers.ModelSerializer):
     
-#     class Meta:
-#         model = User
-#         fields = ["username","password"]
+    class Meta:
+        model = User
+        fields = ["username","password"]
+        extra_kwargs = {'password': {'write_only': True}}
 
-    
+    def create(self, validated_data):
+        return User.objects.create(
+            username=validated_data['username'],
+            password = make_password(validated_data['password'])
+        )
+
 
 class MyProfileSerializer(serializers.ModelSerializer):
 
